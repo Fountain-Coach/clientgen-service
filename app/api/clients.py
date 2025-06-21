@@ -32,7 +32,6 @@ async def list_clients(
         for job in job_manager._jobs.values()
         if job.status == JobStatus.COMPLETED
     ]
-
     total = len(all_clients)
     start = (page - 1) * page_size
     end = start + page_size

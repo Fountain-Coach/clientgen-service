@@ -2,11 +2,12 @@ import logging
 import sys
 import asyncio
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
 
 from app.core.jobs import job_manager
 from app.api import jobs, clients, webhooks, mock_webhook_receiver
+from app.utils.directory_setup import setup_directories
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -15,8 +16,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+SERVICE_NAME = "clientgen-service"
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    logger.info("Ensuring necessary directories exist")
+    setup_directories(SERVICE_NAME)
+
     logger.info("Starting job processor task on startup")
     task = asyncio.create_task(job_manager.process_jobs())
     app.state.job_processor_task = task
@@ -36,37 +42,15 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Include routers with correct prefixes
-app.include_router(jobs.router, prefix="/jobs")
-app.include_router(webhooks.router, prefix="/webhooks")
-app.include_router(clients.router, prefix="/clients")
-app.include_router(mock_webhook_receiver.router, prefix="/mock-webhook")
+app.include_router(jobs.router)
+app.include_router(clients.router)
+app.include_router(webhooks.router)
+app.include_router(mock_webhook_receiver.router)
 
 @app.get("/health")
 async def health():
     return {"status": "ok"}
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/")
 async def landing_page():
-    return """
-    <html>
-        <head>
-            <title>FountainAI Client Generator Service</title>
-            <style>
-                body { font-family: monospace; background: #0d1117; color: #c9d1d9; padding: 2rem; }
-                h1 { color: #58a6ff; }
-                a { color: #58a6ff; text-decoration: none; margin-right: 1rem; }
-                a:hover { text-decoration: underline; }
-            </style>
-        </head>
-        <body>
-            <h1>FountainAI Client Generator</h1>
-            <p>Welcome to the FountainAI Client Generator Service.</p>
-            <nav>
-                <a href="/docs" target="_blank" rel="noopener">API Docs</a>
-                <a href="https://github.com/your-org/clientgen-service" target="_blank" rel="noopener">GitHub Repo</a>
-                <a href="/health">Health Check</a>
-            </nav>
-        </body>
-    </html>
-    """
+    return {"message": "Welcome to the Client Generator Service"}
