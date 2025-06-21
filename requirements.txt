@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+pydantic
+httpx>=0.24.0
+backoff>=2.2.1
+# Add other existing dependencies below as needed

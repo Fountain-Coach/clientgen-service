@@ -1,0 +1,11 @@
+[0;1;32m●[0m clientgen.service - Client Generator FastAPI Service
+     Loaded: loaded (/etc/systemd/system/clientgen.service; disabled; vendor preset: enabled)
+     Active: [0;1;32mactive (running)[0m since Fri 2025-06-20 16:47:46 UTC; 20ms ago
+   Main PID: 14358 (python)
+      Tasks: 1 (limit: 18542)
+     Memory: 3.5M
+        CPU: 17ms
+     CGroup: /system.slice/clientgen.service
+             └─14358 /srv/fountainai/services/clientgen-service/venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+
+Jun 20 16:47:46 fountainai-server systemd[1]: Started Client Generator FastAPI Service.
