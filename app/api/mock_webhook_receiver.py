@@ -1,13 +1,7 @@
-from fastapi import APIRouter, Request
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter
 
-router = APIRouter()
-
-# In-memory store for received webhook events (for testing)
-received_events = []
+router = APIRouter(prefix="/mock-webhook")
 
 @router.post("/mock-webhook")
-async def receive_webhook(request: Request):
-    payload = await request.json()
-    received_events.append(payload)
-    return JSONResponse(content={"received": True})
+async def receive_webhook():
+    return {"message": "Webhook received"}
